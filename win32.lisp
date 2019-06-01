@@ -44,30 +44,6 @@
   (y1 :int)
   (drop :uint32))
 
-
-
-(setf screen-dc (get-dc (null-pointer)))
-(setf memory-dc (create-compatible-dc screen-dc))
-(setf bitmap (create-compatible-bitmap screen-dc 1000 1000))
-(setf old-obj (select-object memory-dc bitmap))
-
-;; (format t "BM0:~%~A~%" (get-pixel screen-dc 10 10))
-(format t "BM0:~%~A~%" (get-pixel screen-dc 10 10))
-
-(bit-blt memory-dc 0 0 1000 1000 screen-dc 0 0 *SRCCOPY*)
-
-(format t "BM1:~%~A~%" (get-pixel memory-dc 10 10))
-
-(open-clipboard (null-pointer))
-(empty-clipboard)
-(set-clipboard-data *CF_BITMAP* bitmap)
-(close-clipboard)
- 
-(select-object memory-dc old-obj)
-(delete-dc memory-dc)
-(release-dc (null-pointer) screen-dc)
-(delete-object bitmap)
-
 (defun x-unregister-hook ()
   (format t "~%UNREG-HOOK:~%"))
 (defun x-able-to-hook ()

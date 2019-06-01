@@ -16,7 +16,10 @@
 #+win32 (load "./win32.lisp")
 
 (setf ltk:*wish-args* '("-name" "Color Picker"))
-(setf ltk:*wish-pathname* "./bin/tclkit-gui")
+#+darwin (setf ltk:*wish-pathname* "./tclkit-gui")
+#+win32 (setf ltk:*wish-pathname* "/c/ActiveTcl/bin/wish")
+
+
 
 (load "./common.lisp")
 
@@ -134,6 +137,7 @@
                  (place point-canvas 0 0 :width 0 :height 0)
                  (configure image-label :image agent-smith))
                (mouse-move-callback ()
+                 (format t "~%AUTO:~A" ltk::*buffer-for-atomic-output*)
                  (let* ((x
 			 #+darwin (* *display-size-ratio* (screen-mouse-x))
 			 #+win32 (screen-mouse-x))
@@ -151,13 +155,14 @@
                          (text hex-label) (concat "HEX: " hex-color)
                          (text rgb-label) (concat "RGB: " rgb-color)
                          (text hsl-label) (concat "HSL: " hsl-color)
-			 (text rgb-label) (concat "RGB: " rgb-color))
+			 ;; (text rgb-label) (concat "RGB: " rgb-color)
+                         )
 		   (format t "~%I AM HERE 1")
-                   (if nil ;(or (< x 0) (< y 0))
+                   (if (or (< x 0) (< y 0))
                        (smith-talk "You've gone too far, Neo")
                        (progn
-			 (return-from mouse-move-callback)
 			 (setf (text smith-label) (get-tip))
+			 (return-from mouse-move-callback)
 			 (format t "~%I AM HERE 2")
 			 (format t "~%LOCK0:~A~%" ltk::*wish-lock*)
                          (configure point-canvas :background hex-color)
@@ -172,7 +177,7 @@
         (bind-hotkeys hex-color rgb-color hsl-color)
 	(bind *tk* "<<SystemMotion>>"
 	      (lambda (e) (declare (ignore e))
-		      (mouse-move-callback)))
+                 (with-atomic (mouse-move-callback))))
         (if (x-able-to-hook)
             (progn
               (let ((top-wish *wish*))

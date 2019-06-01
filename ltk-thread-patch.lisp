@@ -4,6 +4,7 @@
 
 (defun flush-wish ()
   (bordeaux-threads:with-recursive-lock-held (*wish-lock*)
+    (format t "~%FLUSHED: -------------------~%")
     (let ((buffer (nreverse (wish-output-buffer *wish*))))
       (when buffer
         (let ((len (loop for s in buffer summing (length s)))
@@ -68,6 +69,7 @@
 
 (defun send-wish (text)
   (bordeaux-threads:with-recursive-lock-held (*wish-lock*)
+    (format t "~%SEND:~%~A" text)
     (push text (wish-output-buffer *wish*))
     (unless *buffer-for-atomic-output*
       (flush-wish))))
