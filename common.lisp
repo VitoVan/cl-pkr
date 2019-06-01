@@ -53,3 +53,15 @@ each element is between 0.0 and 1.0, inclusive."
    (apply #'format nil "~A, ~A%, ~A%"
           (apply #'color-rgb-to-hsl
                  (mapcar #'(lambda (c) (/ c 255)) color)))))
+
+(defun decimal->rgb (color)
+  (if (> color 0)
+      (let ((hex-str (concat (format nil "~X" color) "00000")))
+	(loop for i from 0 to 5 by 2 collect
+	     (parse-integer
+	      (concatenate
+	       'string
+	       (string (char hex-str i))
+	       (string (char hex-str (1+ i))))
+	      :radix 16)))
+      '(0 0 0)))
