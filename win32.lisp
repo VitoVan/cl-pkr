@@ -11,8 +11,6 @@
 
 (use-foreign-library gdi32)
 
-(defcfun ("SetProcessDPIAware" set-process-dpi-aware) :boolean)
-(defcfun ("GetSystemMetrics" get-system-metrics) :int (nIndex :int))
 (defcfun ("GetDC" get-dc) :pointer (hwnd :pointer))
 (defcfun ("DeleteDC" delete-dc) :boolean (hdc :pointer))
 (defcfun ("ReleaseDC" release-dc) :int (hWnd :pointer) (hdc :pointer))
@@ -23,14 +21,12 @@
   (cx :int)
   (cy :int))
 (defcfun ("SelectObject" select-object) :pointer (hdc :pointer) (h :pointer))
-
 (defcfun ("GetPixel" get-pixel) :uint32 (hdc :pointer) (x :int) (y :int))
 
-(defcfun ("OpenClipboard" open-clipboard) :boolean (hWndNewOwner :pointer))
-(defcfun ("CloseClipboard" close-clipboard) :boolean)
-(defcfun ("EmptyClipboard" empty-clipboard) :boolean)
-(defcfun ("SetClipboardData" set-clipboard-data) :pointer (uFormat :int) (hMem :pointer))
-(defparameter *CF_BITMAP* 2)
+;; https://docs.microsoft.com/en-us/windows/desktop/api/wingdi/nf-wingdi-bitblt
+;; http://www.jasinskionline.com/windowsapi/ref/b/bitblt.html
+;; Const SRCCOPY = &HCC0020
+;; HEX Value CC0020 -> Decimal Value 13369376
 (defparameter *SRCCOPY* 13369376)
 
 (defcfun ("BitBlt" bit-blt) :boolean
@@ -44,20 +40,12 @@
   (y1 :int)
   (drop :uint32))
 
-(defun x-unregister-hook ()
-  (format t "~%UNREG-HOOK:~%"))
-(defun x-able-to-hook ()
-  nil)
-(defun x-copy (text)
-  (format t "~%COPY: ~A~%" text))
-(defun x-register-hook (callback)
-  (format t "~%REG-HOOK:~%"))
-
 (defmacro with-screen-dc ((dc width height) &body body)
   `(let* ((screen-dc (get-dc (null-pointer)))
 	  (,dc (create-compatible-dc screen-dc))
-	  (,width (ltk:screen-width))
-	  (,height (ltk:screen-height))
+	  (screen-size (multiple-value-list (x-display-size)))
+	  (,width (car screen-size))
+	  (,height (cadr screen-size))
 	  (bitmap (create-compatible-bitmap screen-dc ,width ,height))
 	  (old-obj (select-object ,dc bitmap)))
      (unwind-protect
@@ -72,8 +60,8 @@
 
 (defun x-display-size ()
   (values
-   (get-system-metrics 0)
-   (get-system-metrics 1)))
+   (ltk:screen-width)
+   (ltk:screen-width)))
 
 (defun raw-dc->png-data (raw-dc png-data x0 y0 x1 y1)
   (loop for _y from y0 to y1
@@ -88,7 +76,6 @@
                    (a 255))
               (let ((png-x (- _x x0))
                     (png-y (- _y y0)))
-		;; (format t "~%X ~A, Y ~A, R ~A, G ~A, B ~A" _x _y r g b)
                 (setf (aref png-data png-y png-x 0) b
                       (aref png-data png-y png-x 1) g
                       (aref png-data png-y png-x 2) r
@@ -99,7 +86,7 @@
                      (height 1)
                      (delay 0)
                      path)
-  (format t "~%SHOT~%:~A" (list x y width height delay path))
+  (format t "SHOT:~A~%" (list x y width height delay path))
   (sleep delay)
   (and
    (>= x 0)
@@ -107,12 +94,11 @@
    (multiple-value-bind (display-width display-height) (x-display-size)
      (let* ((image (make-instance
                     'zpng:png
-                    :width (or width (* cl-pkr::*display-size-ratio* display-width))
-                    :height (or height (* cl-pkr::*display-size-ratio* display-height))
+                    :width (or width display-width)
+                    :height (or height display-height)
                     :color-type :truecolor-alpha))
             (data (zpng:data-array image)))
        (with-screen-dc (dc w h) ; w is the real width of full screenshot
-	 (setf cl-pkr::*display-size-ratio* (/ w display-width))
 	 (let* ((proper-x (if (> x w) w x))
                 (proper-y (if (> y h) h y))
                 (proper-width (if (> width w) w width))
@@ -131,7 +117,32 @@
                (t (error "Only PNG file is supported"))))
            image)))))
 
-(defun x-snapshot-r (&rest rest)
-  (format t "~%SHOT: ~A~%" rest))
+(defcfun ("OpenClipboard" open-clipboard) :boolean (hWndNewOwner :pointer))
+(defcfun ("CloseClipboard" close-clipboard) :boolean)
+(defcfun ("EmptyClipboard" empty-clipboard) :boolean)
+(defcfun ("SetClipboardData" set-clipboard-data) :pointer (u-format :int) (h-mem :pointer))
+(defcfun ("GlobalAlloc" global-alloc) :pointer (u-flags :uint32) (dw-bytes :uint32))
+(defcfun ("GlobalLock" global-lock) :pointer (h-mem :pointer))
+(defcfun ("GlobalUnlock" global-unlock) :pointer (h-mem :pointer))
+(defcfun ("memcpy" memcpy) :void (dest :pointer) (src :pointer) (count :uint32))
+(defcfun ("strlen" strlen) :uint32 (str :pointer))
 
-;; (set-process-dpi-aware)
+;; https://docs.microsoft.com/en-us/windows/desktop/dataxchg/standard-clipboard-formats
+;; Constant: CF_TEXT, Value: 1, Description: Text format.
+(defparameter *CF_TEXT* 1)
+
+;; https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-globalalloc
+;; Constant: GMEM_MOVEABLE, Value: 0x0002, Description: Allocates movable memory.
+(defparameter *GMEM_MOVEABLE* 2)
+
+(defun x-copy (text)
+  (unwind-protect
+       (with-foreign-string (h-mem text)
+	 (let* ((len (1+ (strlen h-mem)))
+		(g-h-mem (global-alloc *GMEM_MOVEABLE* len)))
+	   (memcpy (global-lock g-h-mem) h-mem len)
+	   (global-unlock g-h-mem)
+	   (open-clipboard (null-pointer))
+	   (empty-clipboard)
+	   (set-clipboard-data *CF_TEXT* g-h-mem)))
+    (close-clipboard)))
