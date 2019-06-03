@@ -18,30 +18,6 @@
 (defcfun ("CFDataGetBytePtr" cf-data-get-byte-ptr) :pointer (data :pointer))
 (defcfun ("CFDataGetLength" cf-data-get-length) :int (data :pointer))
 (defcfun ("CFRelease" cf-release) :void (image :pointer))
-(defcfun ("AXIsProcessTrusted" ax-is-process-trusted) :boolean)
-(defcfun ("CFRunLoopGetCurrent" cf-run-loop-get-current) :pointer)
-(defcfun ("CGEventTapCreate" cg-event-tap-create)  :pointer
-  (tap :uint32)
-  (place :uint32)
-  (options :uint32)
-  (eventsOfInterest :uint64)
-  (callback :pointer)
-  (user-info :pointer))
-(defcfun ("CFMachPortCreateRunLoopSource" cf-mach-port-create-run-loop-source) :pointer
-  (allocator :pointer)
-  (port :pointer)
-  (order :long))
-(defcfun ("CFRunLoopAddSource" cf-run-loop-add-source) :pointer
-  (rl :pointer)
-  (source :pointer)
-  (mode :pointer))
-(defcfun ("CFRunLoopRemoveSource" cf-run-loop-remove-source) :void
-  (rl :pointer)
-  (source :pointer)
-  (mode :pointer))
-(defcfun ("CGEventTapEnable" cg-event-tap-enable) :void (tap :pointer) (enable :boolean))
-(defcfun ("CFRunLoopRun" cf-run-loop-run) :void)
-(defcvar "kCFRunLoopCommonModes" :pointer)
 
 (defun get-cg-image-ref ()
   (cg-display-create-image (cg-main-display-id)))
@@ -132,31 +108,3 @@
 
 (defun x-copy (text)
   (run/ss (format nil "bash -c \"echo -n '~A' | pbcopy\"" text)))
-
-(defparameter ref nil)
-(defparameter source nil)
-(defparameter tap nil)
-(defparameter thread nil)
-
-(defun x-able-to-hook ()
-  (ax-is-process-trusted))
-
-(defun x-register-hook (callback)
-  (defcallback cg-event-tap-callback :pointer
-      ((proxy :pointer) (type :pointer) (event :pointer) (user-info :pointer))
-    (declare (ignore proxy type user-info))
-    (funcall callback)
-    event)
-  (setf ref (cf-run-loop-get-current))
-  (setf tap (cg-event-tap-create 0 0 1 32 (callback cg-event-tap-callback) (null-pointer)))
-  (setf source (cf-mach-port-create-run-loop-source (null-pointer) tap 0))
-  (cf-run-loop-add-source ref source *kcfrunloopcommonmodes*)
-  (cg-event-tap-enable tap t)
-  (cf-run-loop-run))
-
-(defun x-unregister-hook ()
-  (cg-event-tap-enable tap nil)
-  (cf-run-loop-remove-source ref source *kcfrunloopcommonmodes*)
-  (cf-release source)
-  (cf-release tap))
-
