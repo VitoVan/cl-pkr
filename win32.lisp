@@ -100,15 +100,15 @@
             (data (zpng:data-array image)))
        (with-screen-dc (dc w h) ; w is the real width of full screenshot
          (setf x (- x offset) y (- y offset))
-	 (let* ((proper-x (if (> x w) w x))
-                (proper-y (if (> y h) h y))
+	 (let* ((proper-x (if (> x w) w (if (> x 0) x 0)))
+                (proper-y (if (> y h) h (if (> y 0) y 0)))
                 (proper-width (if (> width w) w width))
                 (proper-height (if (> height h) h height))
                 (max-x (+ proper-x proper-width))
                 (max-y (+ proper-y proper-height))
                 (proper-max-x (if (> max-x w) w max-x))
                 (proper-max-y (if (> max-y h) h max-y)))
-           (raw-dc->png-data dc data x y (1- proper-max-x) (1- proper-max-y))))
+           (raw-dc->png-data dc data proper-x proper-y (1- proper-max-x) (1- proper-max-y))))
        (if path
            (let* ((ext (pathname-type path))
                   (path (if ext path (concatenate 'string path ".png")))
