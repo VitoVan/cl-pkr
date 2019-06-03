@@ -16,8 +16,7 @@
 
 (setf ltk:*wish-args* '("-name" "Color Picker"))
 
-(eval-when (:compile-toplevel)
-  (setf ltk:*wish-pathname* "./tclkit-gui"))
+(setf ltk:*wish-pathname* "./bin/tclkit-gui")
 
 (let ((tip-index 0))
   (defun get-tip ()

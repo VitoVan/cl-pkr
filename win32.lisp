@@ -117,33 +117,3 @@
                (png? (zpng:write-png image path))
                (t (error "Only PNG file is supported"))))
            image)))))
-
-(defcfun ("OpenClipboard" open-clipboard) :boolean (hWndNewOwner :pointer))
-(defcfun ("CloseClipboard" close-clipboard) :boolean)
-(defcfun ("EmptyClipboard" empty-clipboard) :boolean)
-(defcfun ("SetClipboardData" set-clipboard-data) :pointer (u-format :int) (h-mem :pointer))
-(defcfun ("GlobalAlloc" global-alloc) :pointer (u-flags :uint32) (dw-bytes :uint32))
-(defcfun ("GlobalLock" global-lock) :pointer (h-mem :pointer))
-(defcfun ("GlobalUnlock" global-unlock) :pointer (h-mem :pointer))
-(defcfun ("memcpy" memcpy) :void (dest :pointer) (src :pointer) (count :uint32))
-(defcfun ("strlen" strlen) :uint32 (str :pointer))
-
-;; https://docs.microsoft.com/en-us/windows/desktop/dataxchg/standard-clipboard-formats
-;; Constant: CF_TEXT, Value: 1, Description: Text format.
-(defparameter *CF_TEXT* 1)
-
-;; https://docs.microsoft.com/en-us/windows/desktop/api/winbase/nf-winbase-globalalloc
-;; Constant: GMEM_MOVEABLE, Value: 0x0002, Description: Allocates movable memory.
-(defparameter *GMEM_MOVEABLE* 2)
-
-(defun x-copy (text)
-  (unwind-protect
-       (with-foreign-string (h-mem text)
-	 (let* ((len (1+ (strlen h-mem)))
-		(g-h-mem (global-alloc *GMEM_MOVEABLE* len)))
-	   (memcpy (global-lock g-h-mem) h-mem len)
-	   (global-unlock g-h-mem)
-	   (open-clipboard (null-pointer))
-	   (empty-clipboard)
-	   (set-clipboard-data *CF_TEXT* g-h-mem)))
-    (close-clipboard)))

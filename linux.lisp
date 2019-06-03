@@ -89,6 +89,3 @@
                  (t (error "Only PNG file is supported"))))
              image)
          image)))))
-
-(defun x-copy (text)
-  (run/ss (format nil "bash -c \"echo -n '~A' | xsel --clipboard --input\"" text)))

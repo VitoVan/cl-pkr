@@ -65,3 +65,7 @@ each element is between 0.0 and 1.0, inclusive."
 	       (string (char hex-str (1+ i))))
 	      :radix 16)))
       '(0 0 0)))
+
+(defun x-copy (text)
+  (ltk:with-atomic (ltk:format-wish "clipboard clear")
+    (ltk:format-wish "clipboard append \"~A\"" text)))

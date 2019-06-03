@@ -110,6 +110,3 @@
                (png? (zpng:write-png image path))
                (t (error "Only PNG file is supported"))))
            image)))))
-
-(defun x-copy (text)
-  (run/ss (format nil "bash -c \"echo -n '~A' | pbcopy\"" text)))
