@@ -87,7 +87,6 @@
                      (delay 0)
                      (offset 0)
                      path)
-  (format t "SHOT:~A~%" (list x y width height delay path))
   (sleep delay)
   (and
    (>= x 0)

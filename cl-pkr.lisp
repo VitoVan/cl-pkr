@@ -6,19 +6,18 @@
 
 (in-package :cl-pkr)
 
-(defparameter *update-frequency* 10)
+(load "./common.lisp")
 
 #+darwin (load "./darwin.lisp")
 #+linux (load "./linux.lisp")
 #+win32 (load "./win32.lisp")
 
+(defparameter *update-frequency* 10)
+
 (setf ltk:*wish-args* '("-name" "Color Picker"))
-(setf ltk:*wish-pathname* "./tclkit-gui")
 
-(eval-when (:execute)
-  (setf ltk:*wish-pathname* "./bin/tclkit-gui"))
-
-(load "./common.lisp")
+(eval-when (:compile-toplevel)
+  (setf ltk:*wish-pathname* "./tclkit-gui"))
 
 (let ((tip-index 0))
   (defun get-tip ()
@@ -156,8 +155,12 @@
 
 (defun dump ()
   (sb-ext:save-lisp-and-die
-   "bin/color-picker"
-   :compression t
+   #-win32 "bin/color-picker"
+   #+win32 "bin/color-picker.exe"
+   #-win32 :compression
+   #-win32 t
+   #+win32 :application-type
+   #+win32 :gui
    :toplevel (lambda ()
                (cl-pkr::color-picker))
    :executable t))
