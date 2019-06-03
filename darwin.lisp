@@ -70,10 +70,13 @@
                       (aref png-data png-y png-x 2) r
                       (aref png-data png-y png-x 3) a))))))
 
+(defparameter *display-size-ratio* 2)
+
 (defun x-snapshot (&key (x 0) (y 0)
                      (width 1)
                      (height 1)
                      (delay 0)
+                     (offset 0)
                      path)
   (sleep delay)
   (and
@@ -82,12 +85,14 @@
    (multiple-value-bind (display-width display-height) (x-display-size)
      (let* ((image (make-instance
                     'zpng:png
-                    :width (or width (* cl-pkr::*display-size-ratio* display-width))
-                    :height (or height (* cl-pkr::*display-size-ratio* display-height))
+                    :width (or width (* *display-size-ratio* display-width))
+                    :height (or height (* *display-size-ratio* display-height))
                     :color-type :truecolor-alpha))
             (data (zpng:data-array image)))
        (with-display-pixel-data (d w h)
-         (setf cl-pkr::*display-size-ratio* (/ w  display-width))
+         (setf *display-size-ratio* (/ w  display-width)
+               x (- (* *display-size-ratio* x) offset)
+               y (- (* *display-size-ratio* y) offset))
          (let* ((proper-x (if (> x w) w x))
                 (proper-y (if (> y h) h y))
                 (proper-width (if (> width w) w width))

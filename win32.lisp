@@ -85,6 +85,7 @@
                      (width 1)
                      (height 1)
                      (delay 0)
+                     (offset 0)
                      path)
   (format t "SHOT:~A~%" (list x y width height delay path))
   (sleep delay)
@@ -99,6 +100,7 @@
                     :color-type :truecolor-alpha))
             (data (zpng:data-array image)))
        (with-screen-dc (dc w h) ; w is the real width of full screenshot
+         (setf x (- x offset) y (- y offset))
 	 (let* ((proper-x (if (> x w) w x))
                 (proper-y (if (> y h) h y))
                 (proper-width (if (> width w) w width))

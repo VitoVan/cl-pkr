@@ -8,8 +8,6 @@
 
 (defparameter *update-frequency* 10)
 
-#+darwin (defparameter *display-size-ratio* 1)
-
 #+darwin (load "./darwin.lisp")
 #+linux (load "./linux.lisp")
 #+win32 (load "./win32.lisp")
@@ -127,16 +125,14 @@
                  (place point-canvas 0 0 :width 0 :height 0)
                  (configure image-label :image agent-smith))
                (update ()
-                 (let* ((x #+darwin (* *display-size-ratio* (screen-mouse-x))
-                           #+(or linux win32) (screen-mouse-x))
-                        (y #+darwin (* *display-size-ratio* (screen-mouse-y))
-                           #+(or linux win32) (screen-mouse-y)))
+                 (let* ((x (screen-mouse-x))
+                        (y (screen-mouse-y)))
                    (when (not (and (eq x old-x) (eq y old-y)))
                      (when (or (< x 0) (< y 0))
                        (smith-talk "You've gone too far, Neo")
                        (after *update-frequency* #'update)
                        (return-from update))
-                       (let* ((png (x-snapshot :x (- x 15) :y (- y 15) :width 31 :height 31))
+                       (let* ((png (x-snapshot :x x :y y :width 31 :height 31 :offset 15))
                               (data (and png (zpng:data-array png)))
                               (colors (color->strs (pixel->color data 15 15)))
                               (base64 (png->base64 png)))

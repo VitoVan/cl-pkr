@@ -47,6 +47,7 @@
                      (width 1)
                      (height 1)
                      (delay 0)
+                     (offset 0)
                      path)
   (sleep delay)
   (and
@@ -54,6 +55,7 @@
    (>= y 0)
    (multiple-value-bind (display-width display-height) (x-display-size)
      (with-default-window (w)
+       (setf x (- x offset) y (- y offset))
        (let ((image
               (raw-image->png
                (xlib:get-raw-image w :x x :y y
