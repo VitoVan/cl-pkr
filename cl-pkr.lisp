@@ -85,7 +85,7 @@
     #+(or linux darwin)
     (namestring
      (merge-pathnames "tclkit-gui" (car (unix-opts:argv))))
-    "./tclkit-gui"))
+    "tclkit-gui"))
   (with-ltk ()
     (init-window)
     (let* ((hex-color nil) (rgb-color nil) (hsl-color nil)
