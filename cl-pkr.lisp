@@ -41,12 +41,6 @@
       (format-wish "image delete ~A" (widget-path raw-photo)))
     photo))
 
-(defun make-smith-image ()
-  (make-instance 'photo-image
-                 :file "./agent-smith.png"
-                 :width 248
-                 :height 248))
-
 (defun make-blank-image ()
   (make-instance 'photo-image
                  :width 248
@@ -69,7 +63,7 @@
   (make-instance 'label
                  :text text :width 248 :padding 10))
 
-(defun make-smith-label ()
+(defun make-tip-label ()
   (make-instance 'label
                  :text (get-tip)
                  :width 248 :padding 10
@@ -99,7 +93,6 @@
   (with-ltk ()
     (init-window)
     (let* ((hex-color nil) (rgb-color nil) (hsl-color nil)
-           (agent-smith (make-smith-image))
            (blank-image (make-blank-image))
            (point-canvas (make-point-canvas))
            (sample-canvas (make-sample-canvas))
@@ -107,7 +100,7 @@
            (hex-label (make-color-label "HEX: #FFFFFF"))
            (rgb-label (make-color-label "RGB: 255, 255, 255"))
            (hsl-label (make-color-label "HSL: 0, 0%, 100%"))
-           (smith-label (make-smith-label))
+           (tip-label (make-tip-label))
            (old-x nil)
            (old-y nil))
       (configure image-label :borderwidth 0)
@@ -115,26 +108,25 @@
       (place hex-label 248 0 :height 40)
       (place rgb-label 248 40 :height 40)
       (place hsl-label 248 80 :height 40)
-      (place smith-label 248 120 :height 40)
+      (place tip-label 248 120 :height 40)
       (bind-hotkeys hex-color rgb-color hsl-color)
-      (labels ((smith-talk (text)
-                 (setf (text smith-label) text)
-                 (place point-canvas 0 0 :width 0 :height 0)
-                 (configure image-label :image agent-smith))
+      (labels ((tip-talk (str &key (color "blue"))
+                 (setf (text tip-label) str)
+                 (configure tip-label :foreground color))
                (update ()
                  (let* ((x (screen-mouse-x))
                         (y (screen-mouse-y)))
                    (when (not (and (eq x old-x) (eq y old-y)))
                      (when (or (< x 0) (< y 0))
-                       (smith-talk "You've gone too far, Neo")
+                       (tip-talk "Come Back to Main Screen, Please" :color "#EE0000")
                        (after *update-frequency* #'update)
                        (return-from update))
                        (let* ((pixels (x-snapshot :x x :y y :width 31 :height 31 :offset 15))
                               (colors (color->strs (pixel->color pixels 15 15))))
+                         (tip-talk (get-tip))
                          (setf
                           old-x x
                           old-y y
-                          (text smith-label) (get-tip)
                           hex-color (first colors)
                           rgb-color (second colors)
                           hsl-color (third colors)
