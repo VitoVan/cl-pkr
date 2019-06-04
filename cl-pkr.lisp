@@ -139,7 +139,8 @@
                          (place sample-canvas 248 160)
                          (configure image-label :image (make-larger-image pixels 8)))))
                  (after *update-frequency* #'update)))
-        (after *update-frequency* #'update)))))
+	(format-wish "focus -force .")
+	(after *update-frequency* #'update)))))
 
 (defun dump ()
   (sb-ext:save-lisp-and-die
