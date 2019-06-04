@@ -23,7 +23,5 @@
                #+win32 (:file "win32")
                (:file "cl-pkr"))
   :build-operation "program-op"
-  :build-pathname
-  #-win32 "bin/color-picker"
-  #+win32 "bin/color-picker.exe"
+  :build-pathname "bin/color-picker"
   :entry-point "cl-pkr:color-picker")
