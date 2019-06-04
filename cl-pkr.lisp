@@ -154,6 +154,6 @@
    #+win32 :gui
    :toplevel (lambda ()
                (setf *wish-pathname*
-                     (or (uiop:getenv "WISH_PATHNAME") "tclkit-gui"))
+                     (or (uiop:getenv "WISH_PATHNAME") "./tclkit-gui"))
                (cl-pkr::color-picker))
    :executable t))
