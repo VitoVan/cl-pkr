@@ -1,0 +1,57 @@
+language: c
+os:
+  - linux
+  - osx
+  - windows
+
+addons:
+  apt:
+    packages:
+      - sbcl
+
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export HOMEBREW_NO_AUTO_UPDATE=1; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install sbcl; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install make; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then wget http://prdownloads.sourceforge.net/sbcl/sbcl-1.4.14-x86-64-windows-binary.msi; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then 7z x sbcl-1.4.14-x86-64-windows-binary.msi -Osbcl-1.4.14; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install zip; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then choco install make; fi
+
+install:
+  - wget http://downloads.sourceforge.net/project/sbcl/sbcl/1.5.3/sbcl-1.5.3-source.tar.bz2
+  - bzip2 -cd sbcl-1.5.3-source.tar.bz2 | tar xvf -
+  - cd sbcl-1.5.3
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export GNUMAKE=gmake; fi
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then sh make.sh --with-fancy --with-sb-core-compression; fi
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then sudo sh install.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then PATH=$PATH:"../sbcl-1.4.14/" SBCL_HOME="../sbcl-1.4.14/" sh make.sh --with-fancy --with-sb-core-compression; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then sh install.sh; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export PATH=$PATH:"C:\Program Files/sbcl/bin/"; fi
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export SBCL_HOME="C:\Program Files/sbcl/lib/sbcl/"; fi
+  - cd ..
+  - wget https://beta.quicklisp.org/quicklisp.lisp
+  - sbcl --load quicklisp.lisp --eval '(progn (quicklisp-quickstart:install) (quit))'
+  - echo '(let ((quicklisp-init (merge-pathnames "quicklisp/setup.lisp" (user-homedir-pathname)))) (when (probe-file quicklisp-init) (load quicklisp-init)))' > ~/.sbclrc
+
+
+script:
+  - mkdir -p bin
+  - sbcl --disable-debugger --load cl-pkr.asd --eval "(ql:quickload 'cl-pkr)" --eval "(asdf:make :cl-pkr)"
+  - cd bin
+  - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export WIN_EXT=".exe"; fi
+  - wget -O tclkit-gui$WIN_EXT https://github.com/VitoVan/kitgen/releases/download/8.6.9/$TRAVIS_OS_NAME-tclkit-gui$WIN_EXT
+  - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then chmod +x tclkit-gui; fi
+  - zip -r -9 $TRAVIS_OS_NAME-color-picker.zip .
+
+deploy:
+  provider: releases
+  api_key:
+    secure: ouovl9Zozo4J6Y/KgDJgKw6SpSngKC363nHjINRdD+WwnnK8k/M2stnmTHixZyvsIw4N5oT6C8qMgnaVt/AwWD4gGqFNwH+68HFs2LzVIlsGIVXelOjyYWNCpE4bDX0XYuaS6A07+EotqHIA1ziCK2ex+cEoLdS/sO80qlbHsSlPkxU9ZIGLppFetnJIeEhG3u9VFjd454IOL/SThgOOCPL87GfzTa7GkM+yBesOVzl7yY9N/pvsKraXsEOOuPUlNRwNVmheKyN81X20u0iCeter3IdRbGgmg8BgteZ1jeeiMqtvpsHQIU9xTxBaq7PjzSj2A48bvp6o9qIbxcvjlRlh00wDnytBN9FfAbmYoXUFWBYU4h9m2Apoyiyj0wYsedFapsmY08nUJl2ewyJ49v8rN+3EWvRF3VQzVRVFM5PzfDnbFuwUWaM3d2fBW93cDh3CxN4etItse0y5cRXnYba7qAnwjgNUuDoY7i/D3LUIZBWfFKFm4CwePg79ScmNbT94RshGvzM9h7MdNZi9BhT//QO6ojPAVdZGnJ/59Lp2z4rj/qhGzZHkiAjFhmgqAXomBaZTkaQWO0j/puWyu2IjB217DJMlxoN/SJbk9qL81FjrqFQ2i6uMaqvFrOFHaUryvMLdjeGbOgePUlrOQwFNqqu4ROHFmFYq/52XIY0=
+  file_glob: true
+  file: ./*.zip
+  skip_cleanup: true
+  overwrite: true
+  draft: true
+  on:
+    repo: VitoVan/cl-pkr
