@@ -4,7 +4,7 @@
   `(let ((,display (xlib:open-default-display)))
      (unwind-protect
           (unwind-protect
-               ,@body
+               (progn ,@body)
             (when ,force
               (xlib:display-force-output ,display)))
        (xlib:close-display ,display))))
@@ -30,35 +30,23 @@
      (xlib:screen-width s)
      (xlib:screen-height s))))
 
-(defun raw-image->png (raw-data width height)
-  (let* ((raw-len (length raw-data))
-         (full-len (* width height 4))
-         (filled-data
-          (concatenate
-           '(vector (unsigned-byte 8))
-           raw-data
-           (make-array (- full-len raw-len) :initial-element 255)))
-         (png (make-instance 'zpng:png
-                             :width width
-                             :height height
-                             :image-data filled-data
-                             :color-type :truecolor-alpha))
-         (png-data (zpng:data-array png)))
-    (dotimes (y height)
-      (dotimes (x width)
-        ;; BGR -> RGB, ref code: https://goo.gl/slubfW
-        ;; diffs between RGB and BGR: https://goo.gl/si1Ft5
-        (rotatef (aref png-data y x 0) (aref png-data y x 2))
-        (setf (aref png-data y x 3) 255)))
-    png))
+(defun raw-data->pixel-list (raw-data x0 y0 x1 y1 w)
+  (loop for _y from 0 to (- y1 y0)
+     collect
+       (loop for _x from 0 to (- x1 x0)
+          collect
+            (let* ((cell-i (+ (* w _y)_x))
+                   (value-i (* cell-i 4))
+                   (r (aref raw-data value-i))
+                   (g (aref raw-data (incf value-i)))
+                   (b (aref raw-data (incf value-i)))
+                   (a (aref raw-data (incf value-i))))
+              (list b g r a)))))
 
 (defun x-snapshot (&key (x 0) (y 0)
                      (width 1)
                      (height 1)
-                     (delay 0)
-                     (offset 0)
-                     path)
-  (sleep delay)
+                     (offset 0))
   (and
    (>= x 0)
    (>= y 0)
@@ -72,20 +60,14 @@
               (max-x (+ proper-x proper-width))
               (max-y (+ proper-y proper-height))
               (proper-max-x (if (> max-x w) w max-x))
-              (proper-max-y (if (> max-y h) h max-y))
-              (image (progn
-                       (raw-image->png
-                        (xlib:get-raw-image window :x proper-x :y proper-y
-                                            :width (- proper-max-x proper-x)
-                                            :height (- proper-max-y proper-y)
-                                            :format :z-pixmap)
-                        width height))))
-         (if path
-             (let* ((ext (pathname-type path))
-                    (path (if ext path (concatenate 'string path ".png")))
-                    (png? (or (null ext) (equal ext "png"))))
-               (cond
-                 (png? (zpng:write-png image path))
-                 (t (error "Only PNG file is supported"))))
-             image)
-         image)))))
+              (proper-max-y (if (> max-y h) h max-y)))
+         (raw-data->pixel-list
+          (xlib:get-raw-image window :x proper-x :y proper-y
+                              :width (- proper-max-x proper-x)
+                              :height (- proper-max-y proper-y)
+                              :format :z-pixmap)
+          proper-x
+          proper-y
+          (1- proper-max-x)
+          (1- proper-max-y)
+          (- proper-max-x proper-x)))))))

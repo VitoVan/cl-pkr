@@ -88,4 +88,10 @@
               (max-y (+ proper-y proper-height))
               (proper-max-x (if (> max-x w) w max-x))
               (proper-max-y (if (> max-y h) h max-y)))
-         (raw-data->pixel-list d proper-x proper-y (1- proper-max-x) (1- proper-max-y) w))))))
+         (raw-data->pixel-list
+          d
+          proper-x
+          proper-y
+          (1- proper-max-x)
+          (1- proper-max-y)
+          w))))))
