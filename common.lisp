@@ -63,5 +63,5 @@ it's a short function, so you can compare the source yourself."
       '(0 0 0)))
 
 (defun x-copy (text)
-  (ltk:with-atomic (ltk:format-wish "clipboard clear")
-    (ltk:format-wish "clipboard append \"~A\"" text)))
+  (with-atomic (format-wish "clipboard clear")
+    (format-wish "clipboard append \"~A\"" text)))

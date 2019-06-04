@@ -42,8 +42,8 @@
 
 (defun x-display-size ()
   (values
-   (ltk:screen-width)
-   (ltk:screen-width)))
+   (screen-width)
+   (screen-width)))
 
 (defmacro with-screen-dc ((dc width height) &body body)
   `(let* ((screen-dc (get-dc (null-pointer)))
