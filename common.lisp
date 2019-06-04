@@ -60,20 +60,6 @@ each element is between 0.0 and 1.0, inclusive."
 	      :radix 16)))
       '(0 0 0)))
 
-;; by Rainer Joswig @ Stack Overflow
-;; https://stackoverflow.com/a/9549738
-(defun array-to-list (array)
-  (let* ((dimensions (array-dimensions array))
-         (depth      (1- (length dimensions)))
-         (indices    (make-list (1+ depth) :initial-element 0)))
-    (labels ((recurse (n)
-               (loop for j below (nth n dimensions)
-                  do (setf (nth n indices) j)
-                  collect (if (= n depth)
-                              (apply #'aref array indices)
-                              (recurse (1+ n))))))
-      (recurse 0))))
-
 (defun x-copy (text)
   (ltk:with-atomic (ltk:format-wish "clipboard clear")
     (ltk:format-wish "clipboard append \"~A\"" text)))
