@@ -133,7 +133,9 @@
                           (text hex-label) (concat "HEX: " hex-color)
                           (text rgb-label) (concat "RGB: " rgb-color)
                           (text hsl-label) (concat "HSL: " hsl-color))
-                         (configure point-canvas :background hex-color)
+                         (configure point-canvas
+                                    :background hex-color
+                                    :highlightbackground (fourth colors))
                          (configure sample-canvas :background hex-color)
                          (place point-canvas 120 120 :width 8 :height 8)
                          (place sample-canvas 248 160)

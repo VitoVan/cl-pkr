@@ -48,7 +48,9 @@ it's a short function, so you can compare the source yourself."
    (apply #'format nil "~A, ~A, ~A" color)
    (apply #'format nil "~A, ~A%, ~A%"
           (apply #'color-rgb-to-hsl
-                 (mapcar #'(lambda (c) (/ c 255)) color)))))
+                 (mapcar #'(lambda (c) (/ c 255)) color)))
+   (apply #'format nil "#~2,'0X~2,'0X~2,'0X"
+          (mapcar #'(lambda (c) (- 255 c)) color))))
 
 (defun decimal->rgb (color)
   (if (> color 0)
