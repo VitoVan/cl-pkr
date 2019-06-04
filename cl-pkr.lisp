@@ -32,7 +32,7 @@
 (defun make-larger-image (pixels ratio)
   (let* ((raw-photo (make-instance 'photo-image))
          (photo (make-instance 'photo-image)))
-    (with-atomic 
+    (with-atomic
         (image-setpixel raw-photo pixels 0 0)
       (format-wish "~A copy ~A -zoom ~A"
                    (widget-path photo)
@@ -132,7 +132,7 @@
                           hsl-color (third colors)
                           (text hex-label) (concat "HEX: " hex-color)
                           (text rgb-label) (concat "RGB: " rgb-color)
-                          (text hsl-label) (concat "HSL: " hsl-color))                         
+                          (text hsl-label) (concat "HSL: " hsl-color))
                          (configure point-canvas :background hex-color)
                          (configure sample-canvas :background hex-color)
                          (place point-canvas 120 120 :width 8 :height 8)
