@@ -10,11 +10,13 @@
        pixel-list)
       '(255 255 255 255)))
 
+;; Modified from Emacs/color.el (2018 with GPL 3.0)
+;; So, I have to make the whole project under GPL 3.0, I think
+;; https://github.com/emacs-mirror/emacs/blob/master/lisp/color.el#L157
 (defun color-rgb-to-hsl (red green blue)
   "Convert RGB colors to their HSL representation.
-RED, GREEN, and BLUE should each be numbers between 0.0 and 1.0,
-inclusive.  Return a list (HUE SATURATION LUMINANCE), where
-each element is between 0.0 and 1.0, inclusive."
+Modified from Emacs/color.el with some ceiling and multiplication call,
+it's a short function, so you can compare the source yourself."
   (let* ((r red)
          (g green)
          (b blue)
