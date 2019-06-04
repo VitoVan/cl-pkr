@@ -1,5 +1,4 @@
-(ql:quickload '(:cffi :bordeaux-threads :inferior-shell))
-(use-package '(:cffi :bordeaux-threads :inferior-shell))
+(in-package #:cl-pkr)
 
 (define-foreign-library application-services
   (:darwin "ApplicationServices.framework/ApplicationServices"))

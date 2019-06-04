@@ -1,3 +1,5 @@
+(in-package #:cl-pkr)
+
 (defun concat (&rest rest)
   (apply #'concatenate 'string rest))
 
@@ -55,13 +57,13 @@ it's a short function, so you can compare the source yourself."
 (defun decimal->rgb (color)
   (if (> color 0)
       (let ((hex-str (concat (format nil "~X" color) "00000")))
-	(loop for i from 0 to 5 by 2 collect
-	     (parse-integer
-	      (concatenate
-	       'string
-	       (string (char hex-str i))
-	       (string (char hex-str (1+ i))))
-	      :radix 16)))
+        (loop for i from 0 to 5 by 2 collect
+             (parse-integer
+              (concatenate
+               'string
+               (string (char hex-str i))
+               (string (char hex-str (1+ i))))
+              :radix 16)))
       '(0 0 0)))
 
 (defun x-copy (text)

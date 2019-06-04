@@ -1,5 +1,4 @@
-(ql:quickload :cffi)
-(use-package :cffi)
+(in-package #:cl-pkr)
 
 (define-foreign-library user32
     (:win32 (:or "user32.dll")))

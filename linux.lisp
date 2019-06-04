@@ -1,4 +1,4 @@
-(ql:quickload :clx)
+(in-package #:cl-pkr)
 
 (defmacro with-default-display ((display &key (force nil)) &body body)
   `(let ((,display (xlib:open-default-display)))
