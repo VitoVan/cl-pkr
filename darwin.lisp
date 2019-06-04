@@ -29,14 +29,14 @@
 (defmacro with-cg-image-ref ((image) &body body)
   `(let ((,image (get-cg-image-ref)))
      (unwind-protect
-          ,@body
+          (progn ,@body)
        (cg-image-release ,image))))
 
 (defmacro with-cf-data-ptr ((image data) &body body)
   `(let* ((data-ref (get-cf-data-ref ,image))
           (,data (cf-data-get-byte-ptr data-ref)))
      (unwind-protect
-          ,@body
+          (progn ,@body)
        (cf-release data-ref))))
 
 (defmacro with-display-pixel-data ((data width height) &body body)
@@ -52,7 +52,7 @@
      (cg-display-pixels-wide display-id)
      (cg-display-pixels-high display-id))))
 
-(defun raw-data->png-data (raw-data png-data x0 y0 x1 y1 w)
+(defun raw-data->pixel-list (raw-data x0 y0 x1 y1 w)
   (loop for _y from y0 to y1
      collect
        (loop for _x from x0 to x1
@@ -63,50 +63,29 @@
                    (g (mem-aref raw-data :uint8 (incf value-i)))
                    (b (mem-aref raw-data :uint8 (incf value-i)))
                    (a (mem-aref raw-data :uint8 (incf value-i))))
-              (let ((png-x (- _x x0))
-                    (png-y (- _y y0)))
-                (setf (aref png-data png-y png-x 0) b
-                      (aref png-data png-y png-x 1) g
-                      (aref png-data png-y png-x 2) r
-                      (aref png-data png-y png-x 3) a))))))
+              (list b g r a)))))
 
+;; for holy retina screen
 (defparameter *display-size-ratio* 2)
 
 (defun x-snapshot (&key (x 0) (y 0)
                      (width 1)
                      (height 1)
-                     (delay 0)
-                     (offset 0)
-                     path)
-  (sleep delay)
+                     (offset 0))
   (and
    (>= x 0)
    (>= y 0)
-   (multiple-value-bind (display-width display-height) (x-display-size)
-     (let* ((image (make-instance
-                    'zpng:png
-                    :width (or width (* *display-size-ratio* display-width))
-                    :height (or height (* *display-size-ratio* display-height))
-                    :color-type :truecolor-alpha))
-            (data (zpng:data-array image)))
-       (with-display-pixel-data (d w h)
-         (setf *display-size-ratio* (/ w  display-width)
-               x (- (* *display-size-ratio* x) offset)
-               y (- (* *display-size-ratio* y) offset))
-         (let* ((proper-x (if (> x w) w (if (> x 0) x 0)))
-                (proper-y (if (> y h) h (if (> y 0) y 0)))
-                (proper-width (if (> width w) w width))
-                (proper-height (if (> height h) h height))
-                (max-x (+ proper-x proper-width))
-                (max-y (+ proper-y proper-height))
-                (proper-max-x (if (> max-x w) w max-x))
-                (proper-max-y (if (> max-y h) h max-y)))
-           (raw-data->png-data d data proper-x proper-y (1- proper-max-x) (1- proper-max-y) w)))
-       (if path
-           (let* ((ext (pathname-type path))
-                  (path (if ext path (concatenate 'string path ".png")))
-                  (png? (or (null ext) (equal ext "png"))))
-             (cond
-               (png? (zpng:write-png image path))
-               (t (error "Only PNG file is supported"))))
-           image)))))
+   (multiple-value-bind (display-width) (x-display-size)
+     (with-display-pixel-data (d w h)
+       (setf *display-size-ratio* (/ w  display-width)
+             x (- (* *display-size-ratio* x) offset)
+             y (- (* *display-size-ratio* y) offset))
+       (let* ((proper-x (if (> x w) w (if (> x 0) x 0)))
+              (proper-y (if (> y h) h (if (> y 0) y 0)))
+              (proper-width (if (> width w) w width))
+              (proper-height (if (> height h) h height))
+              (max-x (+ proper-x proper-width))
+              (max-y (+ proper-y proper-height))
+              (proper-max-x (if (> max-x w) w max-x))
+              (proper-max-y (if (> max-y h) h max-y)))
+         (raw-data->pixel-list d proper-x proper-y (1- proper-max-x) (1- proper-max-y) w))))))

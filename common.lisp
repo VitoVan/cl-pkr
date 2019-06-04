@@ -1,19 +1,13 @@
 (defun concat (&rest rest)
   (apply #'concatenate 'string rest))
 
-(defun png->base64 (png)
-  (and png (with-output-to-string (s)
-             (with-open-stream (out (make-instance 'qbase64:encode-stream
-                                                   :underlying-stream s))
-               (zpng:write-png-stream png out)))))
-
-(defun pixel->color (png-data x y)
-  (if png-data
+(defun pixel->color (pixel-list x y)
+  (if pixel-list
       (funcall
        #'(lambda (data) (mapcar
-                    #'(lambda (i) (aref data y x i))
+                    #'(lambda (i) (nth i (nth x (nth y data))))
                     '(0 1 2 3)))
-       png-data)
+       pixel-list)
       '(255 255 255 255)))
 
 (defun color-rgb-to-hsl (red green blue)
@@ -65,6 +59,20 @@ each element is between 0.0 and 1.0, inclusive."
 	       (string (char hex-str (1+ i))))
 	      :radix 16)))
       '(0 0 0)))
+
+;; by Rainer Joswig @ Stack Overflow
+;; https://stackoverflow.com/a/9549738
+(defun array-to-list (array)
+  (let* ((dimensions (array-dimensions array))
+         (depth      (1- (length dimensions)))
+         (indices    (make-list (1+ depth) :initial-element 0)))
+    (labels ((recurse (n)
+               (loop for j below (nth n dimensions)
+                  do (setf (nth n indices) j)
+                  collect (if (= n depth)
+                              (apply #'aref array indices)
+                              (recurse (1+ n))))))
+      (recurse 0))))
 
 (defun x-copy (text)
   (ltk:with-atomic (ltk:format-wish "clipboard clear")

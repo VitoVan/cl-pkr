@@ -1,5 +1,5 @@
 (sb-ext:unlock-package :sb-ext)
-(ql:quickload '(ltk zpng inferior-shell qbase64))
+(ql:quickload '(ltk inferior-shell qbase64))
 
 (defpackage :cl-pkr
   (:use #:ltk #:common-lisp #:inferior-shell))
@@ -14,9 +14,8 @@
 
 (defparameter *update-frequency* 10)
 
-(setf ltk:*wish-args* '("-name" "Color Picker"))
-
-(setf ltk:*wish-pathname* "./bin/tclkit-gui")
+(setf *wish-args* '("-name" "Color Picker"))
+(setf *wish-pathname* "./bin/tclkit-gui")
 
 (let ((tip-index 0))
   (defun get-tip ()
@@ -30,14 +29,16 @@
   (defun scramble-tip ()
     (setf tip-index (random 3))))
 
-(defun make-larger-image (data ratio)
-  (let* ((raw-photo (make-instance 'photo-image :data data))
+(defun make-larger-image (pixels ratio)
+  (let* ((raw-photo (make-instance 'photo-image))
          (photo (make-instance 'photo-image)))
-    (format-wish "~A copy ~A -zoom ~A"
-                 (widget-path photo)
-                 (widget-path raw-photo)
-                 ratio)
-    (format-wish "image delete ~A" (widget-path raw-photo))
+    (with-atomic 
+        (image-setpixel raw-photo pixels 0 0)
+      (format-wish "~A copy ~A -zoom ~A"
+                   (widget-path photo)
+                   (widget-path raw-photo)
+                   ratio)
+      (format-wish "image delete ~A" (widget-path raw-photo)))
     photo))
 
 (defun make-smith-image ()
@@ -48,8 +49,6 @@
 
 (defun make-blank-image ()
   (make-instance 'photo-image
-                 :data (png->base64
-                        (make-instance 'zpng:png :width 248 :height 248))
                  :width 248
                  :height 248))
 
@@ -130,10 +129,8 @@
                        (smith-talk "You've gone too far, Neo")
                        (after *update-frequency* #'update)
                        (return-from update))
-                       (let* ((png (x-snapshot :x x :y y :width 31 :height 31 :offset 15))
-                              (data (and png (zpng:data-array png)))
-                              (colors (color->strs (pixel->color data 15 15)))
-                              (base64 (png->base64 png)))
+                       (let* ((pixels (x-snapshot :x x :y y :width 31 :height 31 :offset 15))
+                              (colors (color->strs (pixel->color pixels 15 15))))
                          (setf
                           old-x x
                           old-y y
@@ -148,7 +145,7 @@
                          (configure sample-canvas :background hex-color)
                          (place point-canvas 120 120 :width 8 :height 8)
                          (place sample-canvas 248 160)
-                         (configure image-label :image (make-larger-image base64 8)))))
+                         (configure image-label :image (make-larger-image pixels 8)))))
                  (after *update-frequency* #'update)))
         (after *update-frequency* #'update)))))
 
@@ -161,5 +158,7 @@
    #+win32 :application-type
    #+win32 :gui
    :toplevel (lambda ()
+               (setf *wish-pathname*
+                     (concat (namestring (uiop:getcwd)) "tclkit-gui"))
                (cl-pkr::color-picker))
    :executable t))
