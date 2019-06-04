@@ -1,5 +1,6 @@
-(sb-ext:unlock-package :sb-ext)
+#+sbcl (sb-ext:unlock-package :sb-ext)
 (ql:quickload '(ltk inferior-shell qbase64))
+#+(or linux darwin) (ql:quickload 'unix-opts)
 
 (defpackage :cl-pkr
   (:use #:ltk #:common-lisp #:inferior-shell))
@@ -144,16 +145,21 @@
 	(format-wish "focus -force .")
 	(after *update-frequency* #'update)))))
 
-(defun dump ()
-  (sb-ext:save-lisp-and-die
-   #-win32 "bin/color-picker"
-   #+win32 "bin/color-picker.exe"
-   #-win32 :compression
-   #-win32 t
-   #+win32 :application-type
-   #+win32 :gui
-   :toplevel (lambda ()
-               (setf *wish-pathname*
-                     (or (uiop:getenv "WISH_PATHNAME") "./tclkit-gui"))
-               (cl-pkr::color-picker))
-   :executable t))
+#+sbcl (defun dump ()
+         (sb-ext:save-lisp-and-die
+          #-win32 "bin/color-picker"
+          #+win32 "bin/color-picker.exe"
+          #-win32 :compression
+          #-win32 t
+          #+win32 :application-type
+          #+win32 :gui
+          :toplevel (lambda ()
+                      (setf *wish-pathname*
+                            (or
+                             (uiop:getenv "WISH_PATHNAME")
+                             #+(or linux darwin)
+                             (namestring
+                              (merge-pathnames "tclkit-gui" (car (unix-opts:argv))))
+                             "./tclkit-gui"))
+                      (cl-pkr::color-picker))
+          :executable t))
