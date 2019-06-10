@@ -56,7 +56,7 @@ it's a short function, so you can compare the source yourself."
 
 (defun decimal->rgb (color)
   (if (> color 0)
-      (let ((hex-str (concat (format nil "~X" color) "00000")))
+      (let ((hex-str (format nil "~6,'0X" color)))
         (loop for i from 0 to 5 by 2 collect
              (parse-integer
               (concatenate
