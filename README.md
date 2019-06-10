@@ -3,21 +3,21 @@ Cross Platform Color Picker Written in Common Lisp
 
 > with help of [Tcl/Tk](https://www.tcl.tk/)
 
-## Downloads:
+### Downloads:
 
 Check [Releases Page](https://github.com/VitoVan/cl-pkr/releases) to get the latest version.
 
-## Screenshots:
+### Screenshots:
 
-### macOS
+- macOS
 
-![Screenshot on macOS](darwin.png)
+  ![Screenshot on macOS](darwin.png)
 
-### Linux
+- Linux
 
-![Screenshot on Linux](linux.png)
+  ![Screenshot on Linux](linux.png)
 
-### Windows
+- Windows
 
-![Screenshot on Windows](win32.png)
+  ![Screenshot on Windows](win32.png)
 
