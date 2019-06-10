@@ -42,6 +42,9 @@ script:
   - if [[ "$TRAVIS_OS_NAME" == "windows" ]]; then export WIN_EXT=".exe"; fi
   - wget -O tclkit-gui$WIN_EXT https://github.com/VitoVan/kitgen/releases/download/8.6.9/$TRAVIS_OS_NAME-tclkit-gui$WIN_EXT
   - if [[ "$TRAVIS_OS_NAME" != "windows" ]]; then chmod +x tclkit-gui; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export OSX_APP_DIR=color-picker.app/Contents/MacOS; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mkdir -p $OSX_APP_DIR; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then mv color-picker tclkit-gui $OSX_APP_DIR/; fi
   - zip -r -9 $TRAVIS_OS_NAME-color-picker.zip .
 
 deploy:
