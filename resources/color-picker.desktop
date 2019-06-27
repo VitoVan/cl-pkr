@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=Color Picker
+Exec=color-picker
+Icon=iconfile
+Type=Application
+Categories=Utility;

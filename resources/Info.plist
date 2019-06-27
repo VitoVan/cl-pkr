@@ -4,5 +4,7 @@
   <dict>
     <key>NSHighResolutionCapable</key>
     <true/>
+    <key>CFBundleIconFile</key>
+    <string>iconfile</string>
   </dict>
 </plist>

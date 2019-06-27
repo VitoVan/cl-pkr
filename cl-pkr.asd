@@ -11,6 +11,7 @@
   :description "Cross Platform Color Picker written in Common Lisp"
   :author "Vito Van"
   :license "GPL-3.0"
+  :version "1.0.0"
   :depends-on (#:ltk
                #+(or linux darwin) #:unix-opts
                #+(or win32 darwin) #:cffi

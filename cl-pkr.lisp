@@ -2,8 +2,9 @@
 
 (defparameter *update-frequency* 10)
 
+(defparameter *hacking* nil)
+
 (setf *wish-args* '("-name" "Color Picker"))
-(setf *wish-pathname* "./bin/tclkit-gui")
 
 (let ((tip-index 0))
   (defun get-tip ()
@@ -57,6 +58,17 @@
                  :width 248 :padding 10
                  :foreground "blue"))
 
+(defun make-about-button ()
+  (make-instance 'button
+                 :text "About"
+                 :command
+                 (lambda ()
+                   (format t "shit")
+                   (message-box
+                    (format nil "cl-pkr~%Version: ~A~%https://github.com/VitoVan/cl-pkr~%~%Icon made by [dinosoftlabs]~%From www.flaticon.com~%https://www.flaticon.com/authors/dinosoftlabs"
+                            (asdf:component-version (asdf:find-system 'cl-pkr)))
+                    "About Color Picker" "ok" "info" :parent *tk*))))
+
 (defun init-window (&optional (width  496) (height 248))
   (mapcar
    (lambda (func) (funcall func *tk* width height))
@@ -78,14 +90,16 @@
        (lambda (e) (declare (ignore e)) (x-copy ,hsl-color) (scramble-tip)))))
 
 (defun color-picker ()
-  (setf
-   *wish-pathname*
-   (or
-    (uiop:getenv "WISH_PATHNAME")
-    #+(or linux darwin)
-    (namestring
-     (merge-pathnames "tclkit-gui" (car (unix-opts:argv))))
-    "tclkit-gui"))
+  (if *hacking*
+      (setf *wish-pathname* "./bin/tclkit-gui")
+      (setf
+       *wish-pathname*
+       (or
+        (uiop:getenv "WISH_PATHNAME")
+        #+(or linux darwin)
+        (namestring
+         (merge-pathnames "tclkit-gui" (car (unix-opts:argv))))
+        "tclkit-gui")))
   (with-ltk ()
     (init-window)
     (let* ((hex-color nil) (rgb-color nil) (hsl-color nil)
@@ -97,6 +111,7 @@
            (rgb-label (make-color-label "RGB: 255, 255, 255"))
            (hsl-label (make-color-label "HSL: 0, 0%, 100%"))
            (tip-label (make-tip-label))
+           (about-button (make-about-button))
            (old-x nil)
            (old-y nil))
       (configure image-label :borderwidth 0)
@@ -105,6 +120,7 @@
       (place rgb-label 248 40 :height 40)
       (place hsl-label 248 80 :height 40)
       (place tip-label 248 120 :height 40)
+      (place about-button 410 8 :height 24 :width 80)
       (bind-hotkeys hex-color rgb-color hsl-color)
       (labels ((tip-talk (str &key (color "blue"))
                  (setf (text tip-label) str)
