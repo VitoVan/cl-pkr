@@ -1,2 +1,2 @@
 call "vcvars.bat"
-which editbin > EDITBIN_PATH
+where editbin > EDITBIN_PATH

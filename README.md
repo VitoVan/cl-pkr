@@ -3,26 +3,55 @@
 # cl-pkr
 Cross-Platform Color Picker Written in Common Lisp
 
-> with help of [Tcl/Tk](https://www.tcl.tk/)
-
-### Downloads:
-
-Check [Releases Page](https://github.com/VitoVan/cl-pkr/releases) to get the latest version.
+![platform support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg) ![Build Status](https://travis-ci.com/VitoVan/cl-pkr.svg?token=zGyrVcujB9VafCKBLXZc&branch=master)
 
 ### Screenshots:
 
 - macOS
 
-  ![Screenshot on macOS](darwin.png)
+  ![Screenshot on macOS](screenshots/osx.png)
 
 - Linux
 
-  ![Screenshot on Linux](linux.png)
+  ![Screenshot on Linux](screenshots/linux.png)
 
 - Windows
 
-  ![Screenshot on Windows](win32.png)
+  ![Screenshot on Windows](screenshots/windows.png)
 
+### Downloads:
+
+- Linux
+
+    [![color-picker.AppImage](https://img.shields.io/badge/Linux-color--picker.AppImage-blue.svg?logo=linux)](https://github.com/VitoVan/cl-pkr/releases/download/1.0.0/color-picker.AppImage)
+
+- macOS
+
+    [![color-picker.app](https://img.shields.io/badge/macOS-color--picker.app-blue.svg?logo=apple)](https://github.com/VitoVan/cl-pkr/releases/download/1.0.0/color-picker.app.zip)
+
+- Windows
+
+    [![color-picker.exe](https://img.shields.io/badge/Windows-color--picker.exe-blue.svg?logo=windows)](https://github.com/VitoVan/cl-pkr/releases/download/1.0.0/color-picker.exe)
+
+> You are supposed to run it on a 64-bit machine
+> Tested on Fedora 30, macOS Mojave and Windows 10 1809
+
+### Usage:
+
+- On macOS:
+    - [Cmd + C] to Copy HEX
+    - [Cmd + Shift + C] to Copy RGB
+    - [Cmd + Option + C] to Copy HSL
+
+- On Windows or Linux
+    - [Control + C] to Copy HEX
+    - [Control + Shift + C] to Copy RGB
+    - [Control + Alt + C] to Copy HSL
+
+### Known Issues:
+
+- Multi-Monitor not supported
+    You can only pick color from the main display
 ----
 
 ### Hacking:
@@ -45,33 +74,43 @@ Check [Releases Page](https://github.com/VitoVan/cl-pkr/releases) to get the lat
 
 Voilà! Check your `bin` folder for the magic!
 
+> What? You use [Emacs](https://www.gnu.org/software/emacs/) and [SLIME](https://common-lisp.net/project/slime/)?
+
+> Great!
+
+> Eval `(progn (load "cl-pkr.asd") (ql:quickload 'cl-pkr))` in your REPL, then you can call `(cl-pkr:color-picker)`, have fun!
+
 ### Deploy:
 
-Use [Travis CI](https://travis-ci.com/) for the good of your health, you need to change the `deploy` section in the `.travis.yml` file.
+There's two options:
 
-  ```yml
-  deploy:
-    provider: releases
-    api_key:
-      secure: ouovl9...52XIY0= # <------ get yourself a api_key
-    file_glob: true
-    file: ./*.zip
-    skip_cleanup: true
-    overwrite: true
-    draft: true
-    on:
-      repo: VitoVan/cl-pkr # <------ change this to your own repo
-  ```
+1. Use [Travis CI](https://travis-ci.com/) for the good of your health
 
-Links below may help a little:
+    you need to add `GITHUB_TOKEN` according to [uploadtool](https://github.com/probonopd/uploadtool)
 
-https://docs.travis-ci.com/user/deployment/releases/#authenticating-with-an-oauth-token
+2. Use `deploy.sh` in the root folder
 
-https://docs.travis-ci.com/user/deployment#conditional-releases-with-on
+    Run `deploy.sh` and then check your `out` folder.
+
+    - Linux and macOS should work out of the box (unless you don't have [wget](https://www.gnu.org/software/wget/) or internet connection).
+    - on Windows, you need to have
+        - A decent BASH, [Git BASH](https://git-scm.com/download/win) or [MSYS2](https://www.msys2.org/) both should work fine
+        - Make sure you have [unzip](http://infozip.sourceforge.net/UnZip.html) and [wget](https://www.gnu.org/software/wget/) in your BASH.
+        - [EDITBIN](https://docs.microsoft.com/en-us/cpp/build/reference/editbin-reference) which is part of [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019)
+            - Find the location of your `vcvarsall.bat`, then open `cmd`, and call `vcvarsall.bat x64`
+            - Then, type `where editbin`, you'll get the absolute path of `editbin.exe`
+            - `export EB='C:\long path with space\editbin.exe'` in your BASH
+            - Now you are blessed to run `deploy.sh`
 
 ### Credits
 
 - Icon made by [DinosoftLabs](https://www.flaticon.com/authors/dinosoftlabs) from www.flaticon.com
+- [Tcl/Tk](https://www.tcl.tk/)
+- Tclkit build system http://tclkit.googlecode.com/, [forked here](https://github.com/VitoVan/kitgen)
+- [Resource Hacker](http://www.angusj.com/resourcehacker/)
+- [Warp](https://github.com/dgiagio/warp)
+- [AppImage](https://appimage.org/)
 
-- Tclkit build system http://tclkit.googlecode.com/, [forked](https://github.com/VitoVan/kitgen).
+---
 
+![Lisp Caution](http://www.lisperati.com/lisplogo_warning2_256.png)

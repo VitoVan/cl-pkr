@@ -17,3 +17,4 @@
 *.wx32fsl
 bin
 out
+.DS_Store
