@@ -3,17 +3,17 @@
 # cl-pkr
 Cross-Platform Color Picker Written in Common Lisp
 
-![platform support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg) ![Build Status](https://travis-ci.com/VitoVan/cl-pkr.svg?token=zGyrVcujB9VafCKBLXZc&branch=master)
+![platform support](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-blue.svg) [![Build Status](https://travis-ci.com/VitoVan/cl-pkr.svg?token=zGyrVcujB9VafCKBLXZc&branch=master)](https://travis-ci.com/VitoVan/cl-pkr)
 
 ### Screenshots:
-
-- macOS
-
-  ![Screenshot on macOS](screenshots/osx.png)
 
 - Linux
 
   ![Screenshot on Linux](screenshots/linux.png)
+
+- macOS
+
+  ![Screenshot on macOS](screenshots/osx.png)
 
 - Windows
 
@@ -34,6 +34,7 @@ Cross-Platform Color Picker Written in Common Lisp
     [![color-picker.exe](https://img.shields.io/badge/Windows-color--picker.exe-blue.svg?logo=windows)](https://github.com/VitoVan/cl-pkr/releases/download/1.0.0/color-picker.exe)
 
 > You are supposed to run it on a 64-bit machine
+
 > Tested on Fedora 30, macOS Mojave and Windows 10 1809
 
 ### Usage:
@@ -52,6 +53,13 @@ Cross-Platform Color Picker Written in Common Lisp
 
 - Multi-Monitor not supported
     You can only pick color from the main display
+
+### Related Links:
+
+- [Meditations on Color Picker](http://vito.sdf.org/picker.html)
+
+- [cl-icebox](https://github.com/VitoVan/cl-icebox) Cross-Platform GUI framework written in Common Lisp
+
 ----
 
 ### Hacking:
@@ -74,11 +82,9 @@ Cross-Platform Color Picker Written in Common Lisp
 
 Voilà! Check your `bin` folder for the magic!
 
-> What? You use [Emacs](https://www.gnu.org/software/emacs/) and [SLIME](https://common-lisp.net/project/slime/)?
+> What? You use [Emacs](https://www.gnu.org/software/emacs/) and [SLIME](https://common-lisp.net/project/slime/)? Great!
 
-> Great!
-
-> Eval `(progn (load "cl-pkr.asd") (ql:quickload 'cl-pkr))` in your REPL, then you can call `(cl-pkr:color-picker)`, have fun!
+> Eval `(progn (load "cl-pkr.asd") (ql:quickload 'cl-pkr) (setf cl-icebox::*hacking* t))` in your REPL, then you can call `(cl-pkr:color-picker)`, have fun!
 
 ### Deploy:
 
