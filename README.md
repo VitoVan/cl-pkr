@@ -23,15 +23,15 @@ Cross-Platform Color Picker Written in Common Lisp
 
 - Linux
 
-    [![color-picker.AppImage](https://img.shields.io/badge/Linux-color--picker.AppImage-blue.svg?logo=linux)](https://github.com/VitoVan/cl-pkr/releases/download/1.0.0/color-picker.AppImage)
+    [![color-picker.AppImage](https://img.shields.io/badge/Linux-color--picker.AppImage-blue.svg?logo=linux)](https://github.com/VitoVan/cl-pkr/releases/download/1.1.0/color-picker.AppImage)
 
 - macOS
 
-    [![color-picker.app](https://img.shields.io/badge/macOS-color--picker.app-blue.svg?logo=apple)](https://github.com/VitoVan/cl-pkr/releases/download/1.0.0/color-picker.app.zip)
+    [![color-picker.app](https://img.shields.io/badge/macOS-color--picker.app-blue.svg?logo=apple)](https://github.com/VitoVan/cl-pkr/releases/download/1.1.0/color-picker.app.zip)
 
 - Windows
 
-    [![color-picker.exe](https://img.shields.io/badge/Windows-color--picker.exe-blue.svg?logo=windows)](https://github.com/VitoVan/cl-pkr/releases/download/1.0.0/color-picker.exe)
+    [![color-picker.exe](https://img.shields.io/badge/Windows-color--picker.exe-blue.svg?logo=windows)](https://github.com/VitoVan/cl-pkr/releases/download/1.1.0/color-picker.exe)
 
 > You are supposed to run it on a 64-bit machine
 
