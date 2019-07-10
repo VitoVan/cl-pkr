@@ -133,25 +133,27 @@
                        (tip-talk "Come Back to Main Screen, Please" :color "#EE0000")
                        (after *update-frequency* #'update)
                        (return-from update))
-                     (let* ((pixels (x-snapshot :x x :y y :width 31 :height 31 :offset 15))
-                            (colors (color->strs (pixel->color pixels 15 15))))
-                       (tip-talk (get-tip))
-                       (setf
-                        old-x x
-                        old-y y
-                        hex-color (first colors)
-                        rgb-color (second colors)
-                        hsl-color (third colors)
-                        (text hex-label) (concat "HEX: " hex-color)
-                        (text rgb-label) (concat "RGB: " rgb-color)
-                        (text hsl-label) (concat "HSL: " hsl-color))
-                       (configure point-canvas
-                                  :background hex-color
-                                  :highlightbackground (fourth colors))
-                       (configure sample-canvas :background hex-color)
-                       (place point-canvas 120 120 :width 8 :height 8)
-                       (place sample-canvas 248 160)
-                       (configure image-label :image (make-larger-image pixels 8)))))
+                     (setf old-x x old-y y)
+                     (handler-case
+                         (let* ((pixels (x-snapshot :x x :y y :width 31 :height 31 :offset 15))
+                                (colors (color->strs (pixel->color pixels 15 15))))
+                           (tip-talk (get-tip))
+                           (setf
+                            hex-color (first colors)
+                            rgb-color (second colors)
+                            hsl-color (third colors)
+                            (text hex-label) (concat "HEX: " hex-color)
+                            (text rgb-label) (concat "RGB: " rgb-color)
+                            (text hsl-label) (concat "HSL: " hsl-color))
+                           (configure point-canvas
+                                      :background hex-color
+                                      :highlightbackground (fourth colors))
+                           (configure sample-canvas :background hex-color)
+                           (place point-canvas 120 120 :width 8 :height 8)
+                           (place sample-canvas 248 160)
+                           (configure image-label :image (make-larger-image pixels 8)))
+                       (error (c)
+                         (tip-talk "Mmm... Try Me on Main Screen?" :color "#EE0000")))))
                  (after *update-frequency* #'update)))
         (format-wish "focus -force .")
         (after *update-frequency* #'update)))))
