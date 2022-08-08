@@ -72,7 +72,7 @@ Cross-Platform Color Picker Written in Common Lisp
 2. Make sure you have a bin folder and have a proper tclkit inside
 
     - `mkdir -p bin` or just right click to create a folder name `bin`
-    - Download yourself a proper tclkit and rename it to `tclkit-gui` [here](https://github.com/VitoVan/kitgen/releases/tag/8.6.9)
+    - Download yourself a proper tclkit and rename it to `tclkit-gui` [here](https://github.com/VitoVan/kitgen/releases/latest)
 
 3. build your application
 
