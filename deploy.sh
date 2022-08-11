@@ -39,7 +39,7 @@ mkdir -p out
 if [[ "$OS" != "windows" ]]; then
     if [ ! -f "$TCLKIT" ]; then
         wget -O  $TCLKIT \
-             https://github.com/VitoVan/kitgen/releases/download/8.6.9/$OS-tclkit-gui$EXE
+             https://github.com/VitoVan/kitgen/releases/download/8.6.12/$OS-tclkit-gui$EXE
     fi
     chmod +x bin/tclkit-gui;
 fi
