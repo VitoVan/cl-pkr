@@ -72,7 +72,6 @@ jobs:
           wget http://downloads.sourceforge.net/project/sbcl/sbcl/2.2.7/sbcl-2.2.7-source.tar.bz2
           bzip2 -cd sbcl-2.2.7-source.tar.bz2 | tar xvf -
           cd sbcl-2.2.7
-          export GNUMAKE=gmake
           sh make.sh --with-fancy --with-sb-core-compression
           sudo sh install.sh
           wget https://beta.quicklisp.org/quicklisp.lisp
@@ -106,6 +105,7 @@ jobs:
           location: D:\
           release: true
           update: false
+          install: p7zip
 
       # Runs a single command using the runners shell
       - name: Prepare SBCL
