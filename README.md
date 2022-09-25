@@ -89,25 +89,7 @@ Voilà! Check your `bin` folder for the magic!
 
 ### Deploy:
 
-There's two options:
-
-1. Use [Travis CI](https://travis-ci.com/) for the good of your health
-
-    you need to add `GITHUB_TOKEN` according to [uploadtool](https://github.com/probonopd/uploadtool)
-
-2. Use `deploy.sh` in the root folder
-
-    Run `deploy.sh` and then check your `out` folder.
-
-    - Linux and macOS should work out of the box (unless you don't have [wget](https://www.gnu.org/software/wget/) or internet connection).
-    - on Windows, you need to have
-        - A decent BASH, [Git BASH](https://git-scm.com/download/win) or [MSYS2](https://www.msys2.org/) both should work fine
-        - Make sure you have [unzip](http://infozip.sourceforge.net/UnZip.html) and [wget](https://www.gnu.org/software/wget/) in your BASH.
-        - [EDITBIN](https://docs.microsoft.com/en-us/cpp/build/reference/editbin-reference) which is part of [Build Tools for Visual Studio](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019)
-            - Find the location of your `vcvarsall.bat`, then open `cmd`, and call `vcvarsall.bat x64`
-            - Then, type `where editbin`, you'll get the absolute path of `editbin.exe`
-            - `export EB='C:\long path with space\editbin.exe'` in your BASH
-            - Now you are blessed to run `deploy.sh`
+Please check `deploy.sh` and `.github/workflows` for more information.
 
 ### Credits
 
