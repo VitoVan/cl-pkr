@@ -61,7 +61,7 @@ then
     if [ ! -f "$TCLKIT" ]; then
         # get the not-UPX-ed version, to change icon with Resource Hacker
         wget -O $TCLKIT \
-             https://github.com/VitoVan/kitgen/releases/download/continuous-windows/windows-tclkit-gui.ex
+             https://github.com/VitoVan/kitgen/releases/download/8.6.12/$OS-tclkit-gui$EXE
     fi
     mkdir -p out/tmp
     cp ./bin/color-picker.exe ./out/tmp/color-picker.exe
