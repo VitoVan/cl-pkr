@@ -83,7 +83,15 @@ then
     mkdir -p $OSX_APP_DIR
     cp ./resources/Info.plist $OSX_APP_DIR/
     mkdir -p $OSX_APP_DIR/MacOS
-    cp ./bin/color-picker ./bin/tclkit-gui $OSX_APP_DIR/MacOS
+    cp ./bin/color-picker $OSX_APP_DIR/MacOS/color-picker.bin
+    cp ./bin/tclkit-gui $OSX_APP_DIR/MacOS/
+
+    # copy libzstd
+    cp /usr/local/lib/libzstd.1.dylib $OSX_APP_DIR/MacOS/
+    # set DYLD fallback
+    echo "#!/bin/bash" >> $OSX_APP_DIR/MacOS/color-picker
+    echo "DYLD_FALLBACK_LIBRARY_PATH=./ ./color-picker.bin" >> $OSX_APP_DIR/MacOS/color-picker
+    chmod +x $OSX_APP_DIR/MacOS/color-picker
     mkdir -p $OSX_APP_DIR/Resources
     cp ./resources/iconfile.icns $OSX_APP_DIR/Resources
     cd out && zip -r -9 color-picker$APP.zip color-picker.app && cd ..
