@@ -65,6 +65,9 @@ then
     fi
     mkdir -p out/tmp
     cp ./bin/color-picker.exe ./out/tmp/color-picker.exe
+    # copy libzstd
+    ls -lah /d/msys64/
+    cp /d/msys64/mingw64/bin/libzstd.dll ./out/tmp/libzstd.dll
     bin/rh/rh.exe -open ./bin/tclkit-gui.exe -save ./out/tmp/tclkit-gui-noicon.exe -action delete -mask ICONGROUP,,
     bin/rh/rh.exe -open ./out/tmp/tclkit-gui-noicon.exe -save ./out/tmp/tclkit-gui.exe -action addskip -res ./resources/iconfile.ico -mask ICONGROUP,TK
     rm -rf ./out/tmp/tclkit-gui-noicon.exe
