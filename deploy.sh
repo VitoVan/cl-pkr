@@ -89,7 +89,7 @@ then
     # copy libzstd
     cp /usr/local/lib/libzstd.1.dylib $OSX_APP_DIR/MacOS/
     # set DYLD fallback
-    cp ./resources/color-picker.sh $OSX_APP_DIR/color-picker
+    cp ./resources/color-picker.sh $OSX_APP_DIR/MacOS/color-picker
     chmod +x $OSX_APP_DIR/MacOS/*
     mkdir -p $OSX_APP_DIR/Resources
     cp ./resources/iconfile.icns $OSX_APP_DIR/Resources
