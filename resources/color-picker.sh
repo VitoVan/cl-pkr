@@ -1,3 +1,4 @@
+#!/bin/bash
 export USER_DIR=$(pwd)/
 
 # https://stackoverflow.com/questions/59895/how-can-i-get-the-source-directory-of-a-bash-script-from-within-the-script-itsel
