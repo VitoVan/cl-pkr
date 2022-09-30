@@ -109,9 +109,11 @@ jobs:
             unzip
             p7zip
             mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-zstd
             make
             diffutils
             git
+
 
       - name: Install Host SBCL
         shell: msys2 {0}

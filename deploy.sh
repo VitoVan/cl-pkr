@@ -65,6 +65,9 @@ then
     fi
     mkdir -p out/tmp
     cp ./bin/color-picker.exe ./out/tmp/color-picker.exe
+    # copy libzstd
+    ls -lah /d/msys64/
+    cp /d/msys64/mingw64/bin/libzstd.dll ./out/tmp/libzstd.dll
     bin/rh/rh.exe -open ./bin/tclkit-gui.exe -save ./out/tmp/tclkit-gui-noicon.exe -action delete -mask ICONGROUP,,
     bin/rh/rh.exe -open ./out/tmp/tclkit-gui-noicon.exe -save ./out/tmp/tclkit-gui.exe -action addskip -res ./resources/iconfile.ico -mask ICONGROUP,TK
     rm -rf ./out/tmp/tclkit-gui-noicon.exe
@@ -80,7 +83,14 @@ then
     mkdir -p $OSX_APP_DIR
     cp ./resources/Info.plist $OSX_APP_DIR/
     mkdir -p $OSX_APP_DIR/MacOS
-    cp ./bin/color-picker ./bin/tclkit-gui $OSX_APP_DIR/MacOS
+    cp ./bin/color-picker $OSX_APP_DIR/MacOS/color-picker-bin
+    cp ./bin/tclkit-gui $OSX_APP_DIR/MacOS/
+
+    # copy libzstd
+    cp /usr/local/lib/libzstd.1.dylib $OSX_APP_DIR/MacOS/
+    # set DYLD fallback
+    cp ./resources/color-picker.sh $OSX_APP_DIR/MacOS/color-picker
+    chmod +x $OSX_APP_DIR/MacOS/*
     mkdir -p $OSX_APP_DIR/Resources
     cp ./resources/iconfile.icns $OSX_APP_DIR/Resources
     cd out && zip -r -9 color-picker$APP.zip color-picker.app && cd ..
